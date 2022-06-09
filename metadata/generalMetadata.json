@@ -1,0 +1,31 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Brand",
+      "value": "Toyota"
+    },
+    {
+      "trait_type": "Model",
+      "value": "Hilux"
+    },
+    {
+      "trait_type": "Chassis SN",
+      "value": "227383922837290"
+    },
+    {
+      "trait_type": "Motor SN",
+      "value": "FF5559339H72922"
+    },
+    {
+      "trait_type": "Construction date",
+      "value": "5/13/2003"
+    },
+    {
+      "trait_type": "Registration Plate Number",
+      "value": "EVR 555"
+    }
+  ],
+  "description": "Text : Toyota Hilux CS",
+  "image": "https://ipfs.io/ipfs/bafkreifo2sbrizpi32b2qa3mwe47iyelfouowi4akogk7tyfsqn5on5cga",
+  "name": "TestNFTJulian"
+}
