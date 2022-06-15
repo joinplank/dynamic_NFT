@@ -13,7 +13,7 @@
     "@openzeppelin/contracts": "^4.6.0",
     "@truffle/hdwallet-provider": "^2.0.8",
     "dotenv": "^16.0.1",
-    "ganache": "^7.2.0",
+    "ganache-cli": "^6.12.2",
     "truffle": "^5.5.17",
     "web3": "^1.7.3"
   }

@@ -11,8 +11,7 @@ contract carRegistrationContract is ERC721URIStorage_extended,Ownable{
   using Counters for Counters.Counter;
 
   Counters.Counter private tokenId;
-  mapping(uint256 => address) private _allowedManteninance;
-  mapping(uint256 => address) private _allowedIncidents;
+  mapping(uint256 => address) public _allowedManteninance;
 
   struct TransferStruct{
     address buyer;
@@ -20,21 +19,20 @@ contract carRegistrationContract is ERC721URIStorage_extended,Ownable{
     bool paid;
   }
 
-  mapping(uint256 => TransferStruct) private _tranferIntentions;
+  mapping(uint256 => TransferStruct) public _tranferIntentions;
 
-  uint8 fee;
+  uint8 public fee;
 
   constructor(uint8 _fee) ERC721("AutomotiveRegistrationAgency", "ARA"){
     fee = _fee;
   }
 
-  function mintNFT(string memory _tokenURI, address _manteinanceAgency, address _incidentAgency) public onlyOwner returns (uint256){
+  function mintNFT(address _owner, string memory _tokenURI, address _manteinanceAgency) public onlyOwner returns (uint256){
     tokenId.increment();
     uint256 newId = tokenId.current();
-    _mint(msg.sender, newId);
+    _mint(_owner, newId);
     _setTokenURI(newId, _tokenURI);
     _allowedManteninance[newId] = _manteinanceAgency;
-    _allowedIncidents[newId] = _incidentAgency;
     return newId;
   }
 
@@ -43,13 +41,9 @@ contract carRegistrationContract is ERC721URIStorage_extended,Ownable{
       _allowedManteninance[_tokenId] = _allowed;
     }
 
-  function setAllowedIncidents(uint256 _tokenId, address _allowed) external onlyOwner{
-      require(_exists(_tokenId), "URI query for nonexistent token");
-      _allowedIncidents[_tokenId] = _allowed;
-    }
 
     function setFee(uint8 _newFee) external onlyOwner{
-      require (_newFee >= 0 && _newFee <= 100, "Invaid fee value");
+      require(_newFee >= 0 && _newFee <= 100, "Invaid fee value");
       fee = _newFee;
     }
 
@@ -59,7 +53,6 @@ contract carRegistrationContract is ERC721URIStorage_extended,Ownable{
   //would implicate gas consumition.
   //URIType 0 -> tokenURI
   //URIType 1 -> _tokenURI_maintenances
-  //URIType 2 -> _tokenURI_incidents
 
 
   function setURIManteinance(uint256 _tokenId, string memory _tokenURI) external {
@@ -69,11 +62,6 @@ contract carRegistrationContract is ERC721URIStorage_extended,Ownable{
 
   }
 
-  function setURIIncidents(uint256 _tokenId, string memory _tokenURI) external {
-    require(_exists(_tokenId), "URI query for nonexistent token");
-    require(msg.sender == _allowedIncidents[_tokenId] || msg.sender == owner());
-    _setTokenURI(_tokenId, _tokenURI, 2);
-  }
 
   function setURI(uint256 _tokenId, string memory _tokenURI) external onlyOwner{
     require(_exists(_tokenId), "URI query for nonexistent token");
@@ -83,11 +71,11 @@ contract carRegistrationContract is ERC721URIStorage_extended,Ownable{
 
 //TRANSFER INTENTION FUNTIONS
 
-  function tranferIntention(uint256 _tokenId, address _seller, uint256 _price) external{
+  function tranferIntention(uint256 _tokenId, address _buyer, uint256 _price) external{
     require(_exists(_tokenId), "Tranfer intention for nonexistent token");
     require(ownerOf(_tokenId) == msg.sender, "Not the owner of the car");
 
-    _tranferIntentions[_tokenId] = TransferStruct(_seller,_price, false);
+    _tranferIntentions[_tokenId] = TransferStruct(_buyer,_price, false);
   }
 
   function deleteTranferIntention(uint256 _tokenId) external{
@@ -104,17 +92,15 @@ contract carRegistrationContract is ERC721URIStorage_extended,Ownable{
     require(msg.value == _tranferIntentions[_tokenId].price, "Not the accorded price");
 
     _tranferIntentions[_tokenId].paid = true;
-
-
-
   }
 
   function carTransfer(uint256 _tokenId) external{
     require(_exists(_tokenId), "Nonexistent token");
-    require(_tranferIntentions[_tokenId].buyer != address(0), "No tranfer intention for this car");
     require(_tranferIntentions[_tokenId].paid, "Not paid!");
+    require(ownerOf(_tokenId) == msg.sender);
+    //Possible vulnerability, please check!
 
-    payable(ownerOf(_tokenId)).transfer(_tranferIntentions[_tokenId].price * ((100 - fee) / 100));
+    payable(ownerOf(_tokenId)).transfer(_tranferIntentions[_tokenId].price - (_tranferIntentions[_tokenId].price * 2 / 100));
     transferFrom(msg.sender, _tranferIntentions[_tokenId].buyer, _tokenId);
 
     delete _tranferIntentions[_tokenId];
