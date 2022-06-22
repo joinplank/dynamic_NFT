@@ -88,7 +88,7 @@ describe("Car Registration Contract - Unit Testing:", () => {
     assert.equal(mintedMannteinanceAddress, accounts[3]);
   });
 
-  it("Owner can set manteinance URI", async () => {
+  it("Contract Owner can set manteinance URI", async () => {
     const manteinanceURI = "ThisIsADummyManteinanceURI";
 
     await contract.methods
@@ -142,7 +142,7 @@ describe("Car Registration Contract - Unit Testing:", () => {
     assert.equal(tokenURIModified, tokenURIReaded);
   });
 
-  it("Only owner can set URI", async () => {
+  it("Only contract owner can set URI", async () => {
     const tokenURIModified = "ThisIsADummyTokenURIModified";
     try {
       await contract.methods
@@ -336,6 +336,14 @@ describe("Car Registration Contract - Unit Testing:", () => {
       return;
     }
     assert(false);
+  });
+
+  it("Let know the owner", async () => {
+    let owner = await contract.methods
+      .ownerOf(tokenId)
+      .call({ from: accounts[0] });
+
+    assert(owner == accounts[1]);
   });
 
   // it("Let burn an NFT", async () => {
