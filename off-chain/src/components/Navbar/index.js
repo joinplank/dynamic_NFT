@@ -10,10 +10,10 @@ const Navbar = () => {
             ARA
           </NavLink>
           <NavLink to="/manteinance" activeStyle>
-            Manteinance
+            Maintenance
           </NavLink>
           <NavLink to="/newOwner" activeStyle>
-            New Owner
+            Buyer
           </NavLink>
           <NavLink to="/owner" activeStyle>
             Owner

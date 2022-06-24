@@ -3,7 +3,7 @@ import web3 from "./web3";
 //TODO: export ABI from ../../../build/contracts/carRegistrationContract.json
 //TODO: export address from .env
 
-const address = "0x634C3ccD56Cb8858b559CdbDfEC738523902D2cC";
+const address = "0x034b0Da52CffC2E5efAf397C917d68b3276c3809";
 const abi = [
   {
     inputs: [

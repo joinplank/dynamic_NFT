@@ -2,17 +2,14 @@ julian@julian-ThinkPad-T14s-Gen-2i:~/education/carRegistration$ truffle migrate 
 
 Compiling your contracts...
 ===========================
-> Compiling ./contracts/carRegistrationContract.sol
-> Artifacts written to /home/julian/education/carRegistration/build/contracts
-> Compiled successfully using:
-   - solc: 0.8.14+commit.80d49f37.Emscripten.clang
+> Everything is up to date, there is nothing to compile.
 
 
 Migrations dry-run (simulation)
 ===============================
 > Network name:    'rinkeby-fork'
 > Network id:      4
-> Block gas limit: 30000000 (0x1c9c380)
+> Block gas limit: 29970705 (0x1c95111)
 
 
 1_initial_migration.js
@@ -20,10 +17,10 @@ Migrations dry-run (simulation)
 
    Replacing 'carRegistrationContract'
    -----------------------------------
-   > block number:        10863124
-   > block timestamp:     1655398111
-   > account:             0xfCad84b2493E2e6bD0c2F141dA8D6d76aA85D0fC
-   > balance:             0.483016584167357014
+   > block number:        10904462
+   > block timestamp:     1656020201
+   > account:             0x6D8f6EE1bf3F4fdf3C22b1d6591E644503427284
+   > balance:             0.2572007
    > gas used:            4279930 (0x414e7a)
    > gas price:           10 gwei
    > value sent:          0 ETH
@@ -52,13 +49,13 @@ Starting migrations...
 
    Replacing 'carRegistrationContract'
    -----------------------------------
-   > transaction hash:    0x9fc709df8abd37b28c41cbce862b4158ee3febf100722dca0f1dce9749a97f98
-   > Blocks: 2            Seconds: 17
-   > contract address:    0x634C3ccD56Cb8858b559CdbDfEC738523902D2cC
-   > block number:        10863131
-   > block timestamp:     1655398145
-   > account:             0xfCad84b2493E2e6bD0c2F141dA8D6d76aA85D0fC
-   > balance:             0.483016584167357014
+   > transaction hash:    0x9839ca25f2b7bc3b5df265fa8d636957661c76f076f48aa78744146c2bd30e7e
+   > Blocks: 2            Seconds: 21
+   > contract address:    0x034b0Da52CffC2E5efAf397C917d68b3276c3809
+   > block number:        10904468
+   > block timestamp:     1656020226
+   > account:             0x6D8f6EE1bf3F4fdf3C22b1d6591E644503427284
+   > balance:             0.2572007
    > gas used:            4279930 (0x414e7a)
    > gas price:           10 gwei
    > value sent:          0 ETH
@@ -71,4 +68,4 @@ Starting migrations...
 Summary
 =======
 > Total deployments:   1
-> Final cost:          0.0427993 ETH /*50USD*/
+> Final cost:          0.0427993 ETH

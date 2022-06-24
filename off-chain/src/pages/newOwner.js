@@ -28,15 +28,11 @@ class NewOwner extends React.Component {
     }
   };
 
-  onSubmitTransfer = async (event) => {
-    event.preventDefault();
-  };
-
   render() {
     return (
       <div>
         <hr />
-        <h1 align="center">New Owner functions</h1>
+        <h1 align="center">Buyer functions</h1>
         <hr />
         <form onSubmit={this.onSubmitPay}>
           <h2>Pay for a car</h2>
@@ -58,7 +54,7 @@ class NewOwner extends React.Component {
               }
             />
           </h3>
-          <button>Paga ra prata</button>
+          <button> Pay </button>
         </form>
         <hr />
         <h1>{this.state.message}</h1>

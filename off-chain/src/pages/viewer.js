@@ -15,6 +15,7 @@ class Viewer extends React.Component {
     date: "",
     plate: "",
     description: "",
+    ownerNumber: "",
     owner: "",
     ownerHistory: "",
     tokenIdSelected: "",
@@ -36,6 +37,27 @@ class Viewer extends React.Component {
 
     this.setState({ message: "Waiting on transaction success..." });
 
+    this.setState({
+      srcPicture: "",
+      brand: "",
+      model: "",
+      chassis: "",
+      motor: "",
+      date: "",
+      plate: "",
+      description: "",
+      owner: "",
+      ownerHistory: "",
+      tokenIdSelected: "",
+      ownerNumber: "",
+      tiMessage: "",
+      tiBuyer: "",
+      tiPrice: "",
+      tiPaid: "",
+      messageMant: "",
+      table: [],
+    });
+
     await contract.getPastEvents(
       "Transfer",
       {
@@ -44,8 +66,9 @@ class Viewer extends React.Component {
         toBlock: "latest",
       },
       (err, events) => {
-        console.log(events);
+        //console.log(events);
         let response;
+        this.setState({ ownerNumber: events.length });
         for (let i = 0; i < events.length; i++) {
           //console.log("Dueño:", events[0].returnValues["to"]);
           owners =
@@ -87,10 +110,13 @@ class Viewer extends React.Component {
         description: "",
         table: "",
         tokenId: "",
+        ownerNumber: "",
         tokenIdSelected: "",
         ownerHistory: "",
       });
     }
+
+    console.log("TOKEN URIIIIIIIIIII: ", tokenUri);
 
     try {
       let response = await fetch(tokenUri);
@@ -152,10 +178,10 @@ class Viewer extends React.Component {
         messageMant: "",
       });
       try {
-        console.log("URI:" + tokenUri);
+        //console.log("URI:" + tokenUri);
         let response = await fetch(tokenUri);
         responseJson = await response.json();
-        console.log("responseJson", responseJson.maintenances);
+        //console.log("responseJson", responseJson.maintenances);
         this.setState({
           table: responseJson.maintenances,
         });
@@ -202,7 +228,7 @@ class Viewer extends React.Component {
           <h3>Chassis: {this.state.chassis}</h3>
           <h3>Plate Number:{this.state.plate} </h3>
           <h3>Construction Date: {this.state.date}</h3>
-
+          <h3>Number of owners: {this.state.ownerNumber}</h3>
           <h3>Owner History: {this.state.ownerHistory}</h3>
         </div>
         <hr />
@@ -231,15 +257,15 @@ class Viewer extends React.Component {
             </thead>
             <tbody>
               {this.state.table.length > 0 &&
-                this.state.table.map((item) =>
-                  Object.values(item).map((element) => {
-                    return (
-                      <th align="center">
-                        <td>{element}</td>
-                      </th>
-                    );
-                  })
-                )}
+                this.state.table.map((item) => {
+                  return (
+                    <tr>
+                      {Object.values(item).map((element) => {
+                        return <td>{element}</td>;
+                      })}
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

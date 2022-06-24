@@ -3,6 +3,8 @@ import web3 from "../web3";
 import contract from "../carRegistrationContract";
 import { create } from "ipfs-http-client";
 
+const client = create("https://ipfs.infura.io:5001/api/v0");
+
 class Maintenance extends React.Component {
   //the pourpose to use the constructur is to initialize the state vars
   state = {
@@ -70,17 +72,6 @@ class Maintenance extends React.Component {
         console.error(error);
       }
     }
-
-    //this.setState({
-    //description: responseJson.description,
-    //brand: responseJson.attributes[0].value,
-    //model: responseJson.attributes[1].value,
-    //chassis: responseJson.attributes[2].value,
-    //motor: responseJson.attributes[3].value,
-    //date: responseJson.attributes[4].value,
-    //plate: responseJson.attributes[5].value,
-    //tokenIdSelected: this.state.tokenId,
-    //});
   };
 
   onSubmitForm = async (event) => {
@@ -103,6 +94,30 @@ class Maintenance extends React.Component {
       console.log(e);
       this.setState({
         message: "Transaction error",
+      });
+    }
+  };
+
+  onChangeMant = async (event) => {
+    const file = event.target.files[0];
+
+    this.setState({
+      message: "Uploading metadata",
+    });
+
+    try {
+      const added = await client.add(file);
+      const metadata = `https://ipfs.infura.io/ipfs/${added.path}`;
+
+      this.setState({ metadata });
+
+      console.log("URL MANTENIMIENTO: ", metadata);
+      this.setState({
+        message: "Metadata Uploaded",
+      });
+    } catch (error) {
+      this.setState({
+        message: "Error uploading metadata",
       });
     }
   };
@@ -150,15 +165,15 @@ class Maintenance extends React.Component {
             </thead>
             <tbody>
               {this.state.table.length > 0 &&
-                this.state.table.map((item) =>
-                  Object.values(item).map((element) => {
-                    return (
-                      <th align="center">
-                        <td>{element}</td>
-                      </th>
-                    );
-                  })
-                )}
+                this.state.table.map((item) => {
+                  return (
+                    <tr>
+                      {Object.values(item).map((element) => {
+                        return <td>{element}</td>;
+                      })}
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -166,12 +181,7 @@ class Maintenance extends React.Component {
         <form onSubmit={this.onSubmitForm}>
           <h4>
             New maintenance info:{" "}
-            <input
-              value={this.state.metadata}
-              onChange={(event) =>
-                this.setState({ metadata: event.target.value })
-              }
-            />
+            <input type="file" onChange={this.onChangeMant} />
           </h4>
           <button>Change Maintenance Information</button>
         </form>

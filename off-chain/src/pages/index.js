@@ -8,7 +8,7 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = { owner: "" };
-    this.state = { balance: "aa" };
+    this.state = { balance: "" };
     this.message = { message: "" };
   }
 

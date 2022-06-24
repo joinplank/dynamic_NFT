@@ -17,6 +17,16 @@ class ARA extends React.Component {
     newDealer: "",
     tokenId: "",
     newMetadata: "",
+    brand: "",
+    model: "",
+    chassis: "",
+    motor: "",
+    date: "",
+    plate: "",
+    srcPicture: "",
+    srcPictureInfura: "",
+    description: "",
+    name: "",
   };
 
   //executes one time when the component is rendered
@@ -90,30 +100,88 @@ class ARA extends React.Component {
   onSubmitNFT = async (event) => {
     event.preventDefault();
     const accounts = await web3.eth.getAccounts();
-    let tokenId;
 
     this.setState({
-      message: "Minting NFT...",
+      message: "Uploading metadata...",
     });
 
-    try {
-      const TX = await contract.methods
-        .mintNFT(this.state.owner, this.state.metadata, this.state.dealer)
-        .send({ from: accounts[0], gas: "5000000" });
+    const metadata = {
+      attributes: [
+        {
+          trait_type: "Brand",
+          value: `${this.state.brand}`,
+        },
+        {
+          trait_type: "Model",
+          value: `${this.state.model}`,
+        },
+        {
+          trait_type: "Chassis SN",
+          value: `${this.state.chassis}`,
+        },
+        {
+          trait_type: "Motor SN",
+          value: `${this.state.motor}`,
+        },
+        {
+          trait_type: "Construction date",
+          value: `${this.state.date}`,
+        },
+        {
+          trait_type: "Registration Plate Number",
+          value: `${this.state.plate}`,
+        },
+      ],
+      description: `${this.state.description}`,
+      image: `${this.state.srcPicture}`,
+      name: `${this.state.name}`,
+    };
 
-      tokenId = TX.events.Transfer.returnValues["tokenId"];
-    } catch {
-      this.setState({
-        message: "Transaction error",
-      });
-    }
+    //const file = new File([JSON.parse(JSON.stringify(metadata))], "file.json");
+
+    const added = await client.add(JSON.stringify(metadata));
+    const tokenURI = `https://ipfs.io/ipfs/${added.path}`;
+
+    console.log("tokenURI: ", tokenURI);
+
+    //mint NFT
+    const TX = await contract.methods
+      .mintNFT(this.state.owner, tokenURI, this.state.dealer)
+      .send({ from: accounts[0], gas: "5000000" });
+
+    let tokenId = TX.events.Transfer.returnValues["tokenId"];
+
     this.setState({
-      message: "NFT Minted! TokenId; " + tokenId,
+      message: "Token ID: " + tokenId,
     });
   };
 
+  onChangePicture = async (event) => {
+    const file = event.target.files[0];
+    this.setState({
+      message: "Uploading Picture",
+    });
+    try {
+      const added = await client.add(file);
+      const srcPicture = `https://ipfs.io/ipfs/${added.path}`;
+      //I use the infura src for the image to appear quikly. But I dont use it to form the metadata since opensea doesent eccept it
+      const srcPictureInfura = `https://ipfs.infura.io/ipfs/${added.path}`;
+      this.setState({ srcPicture });
+      this.setState({ srcPictureInfura });
+
+      console.log("URL FOTO: ", srcPictureInfura);
+
+      this.setState({
+        message: "",
+      });
+    } catch (error) {
+      this.setState({
+        message: "Error uploading picture",
+      });
+    }
+  };
+
   render() {
-    //const Home = () => {
     return (
       <div>
         <hr />
@@ -125,6 +193,60 @@ class ARA extends React.Component {
           <div>
             <h1>Create new NFT</h1>
             <h4>
+              Brand:{" "}
+              <input
+                value={this.state.brand}
+                onChange={(event) =>
+                  this.setState({ brand: event.target.value })
+                }
+              />
+            </h4>{" "}
+            <h4>
+              Model:{" "}
+              <input
+                value={this.state.model}
+                onChange={(event) =>
+                  this.setState({ model: event.target.value })
+                }
+              />
+            </h4>
+            <h4>
+              Chassis number:{" "}
+              <input
+                value={this.state.chassis}
+                onChange={(event) =>
+                  this.setState({ chassis: event.target.value })
+                }
+              />
+            </h4>
+            <h4>
+              Motor number:{" "}
+              <input
+                value={this.state.motor}
+                onChange={(event) =>
+                  this.setState({ motor: event.target.value })
+                }
+              />
+            </h4>
+            <h4>
+              Fabrication date:{" "}
+              <input
+                value={this.state.date}
+                onChange={(event) =>
+                  this.setState({ date: event.target.value })
+                }
+              />
+            </h4>
+            <h4>
+              Plate number:{" "}
+              <input
+                value={this.state.plate}
+                onChange={(event) =>
+                  this.setState({ plate: event.target.value })
+                }
+              />
+            </h4>
+            <h4>
               Owner:{" "}
               <input
                 value={this.state.owner}
@@ -134,7 +256,7 @@ class ARA extends React.Component {
               />
             </h4>
             <h4>
-              Car Dealer:{" "}
+              Car Dealer Address:{" "}
               <input
                 value={this.state.dealer}
                 onChange={(event) =>
@@ -143,18 +265,27 @@ class ARA extends React.Component {
               />
             </h4>
             <h4>
-              Metadata:{" "}
+              Description:{" "}
               <input
-                value={this.state.metadata}
+                value={this.state.description}
                 onChange={(event) =>
-                  this.setState({ metadata: event.target.value })
+                  this.setState({
+                    description: event.target.value,
+                    name: event.target.value,
+                  })
                 }
               />
             </h4>
-
+            <h4>
+              Picture: <input type="file" onChange={this.onChangePicture} />
+            </h4>
+            <h4>
+              <img src={this.state.srcPictureInfura} width="200px" />
+            </h4>
             <button>Mint NFT</button>
           </div>
         </form>
+
         <hr />
 
         <form onSubmit={this.onSubmitChangeMetadata}>
