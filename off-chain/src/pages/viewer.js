@@ -116,7 +116,7 @@ class Viewer extends React.Component {
       });
     }
 
-    console.log("TOKEN URIIIIIIIIIII: ", tokenUri);
+    console.log("TOKEN URI: ", tokenUri);
 
     try {
       let response = await fetch(tokenUri);

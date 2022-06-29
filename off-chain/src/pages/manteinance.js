@@ -14,6 +14,11 @@ class Maintenance extends React.Component {
     metadata: "",
     allowed: "",
     table: [],
+    name: "",
+    km: "",
+    description: "",
+    observations: "",
+    dealer: "",
   };
 
   onSubmitView = async (event) => {
@@ -28,10 +33,12 @@ class Maintenance extends React.Component {
     this.setState({ message: "Waiting on transaction success..." });
 
     try {
-      tokenUri = await contract.methods
-        .tokenURI(this.state.tokenId, 1)
+      let allowed = await contract.methods
+        ._allowedManteninance(this.state.tokenId)
         .call({ from: accounts[0] });
+
       this.setState({ message: "" });
+      this.setState({ allowed });
     } catch {
       this.setState({
         message: "Transaction error",
@@ -39,12 +46,10 @@ class Maintenance extends React.Component {
     }
 
     try {
-      let allowed = await contract.methods
-        ._allowedManteninance(this.state.tokenId)
+      tokenUri = await contract.methods
+        .tokenURI(this.state.tokenId, 1)
         .call({ from: accounts[0] });
-
       this.setState({ message: "" });
-      this.setState({ allowed });
     } catch {
       this.setState({
         message: "Transaction error",
@@ -63,11 +68,12 @@ class Maintenance extends React.Component {
         console.log("URI:" + tokenUri);
         let response = await fetch(tokenUri);
         responseJson = await response.json();
-        console.log("responseJson", responseJson.maintenances);
+
+        //console.log("response: ", responseJson.maintenances.length);
+
         this.setState({
           table: responseJson.maintenances,
         });
-        //console.log("QUE HAY EN TABLE", this.state.table);
       } catch (error) {
         console.error(error);
       }
@@ -76,48 +82,84 @@ class Maintenance extends React.Component {
 
   onSubmitForm = async (event) => {
     event.preventDefault();
+    let tokenUri;
     const accounts = await web3.eth.getAccounts();
-    let tokenId;
+    let responseJson = {
+      maintenances: [
+        {
+          name: "",
+          km: "",
+          description: "",
+          observations: "",
+          dealer: "",
+        },
+      ],
+    };
+    let index = 0;
+
+    //I dont like how this is implemented but it works anyway. There is a lot of duplicated code. Please fix it.
+
+    try {
+      tokenUri = await contract.methods
+        .tokenURI(this.state.tokenId, 1)
+        .call({ from: accounts[0] });
+      this.setState({ message: "" });
+    } catch {
+      this.setState({
+        message: "Transaction error",
+      });
+    }
+
+    if (tokenUri != "") {
+      //no maintenance yet
+
+      this.setState({
+        messageMant: "",
+      });
+      try {
+        let response = await fetch(tokenUri);
+        responseJson = await response.json();
+
+        index = responseJson.maintenances.length;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    responseJson.maintenances[index] = {
+      name: `${this.state.name}`,
+      km: `${this.state.km}`,
+      description: `${this.state.description}`,
+      observations: `${this.state.observations}`,
+      dealer: `${this.state.dealer}`,
+    };
 
     this.setState({
       message: "Upgrading maintenance Information",
     });
 
+    console.log("jsonnn: ", JSON.stringify(responseJson));
+    const added = await client.add(JSON.stringify(responseJson));
+    const metadata = `https://ipfs.infura.io/ipfs/${added.path}`;
+
+    //console.log("metadata: ", metadata);
+
     try {
       await contract.methods
-        .setURIManteinance(this.state.tokenId, this.state.metadata)
+        .setURIManteinance(this.state.tokenId, metadata)
         .send({ from: accounts[0] });
       this.setState({
         message: "",
+      });
+
+      //to refresh
+      this.setState({
+        tokenId: this.state.tokenId,
       });
     } catch (e) {
       console.log(e);
       this.setState({
         message: "Transaction error",
-      });
-    }
-  };
-
-  onChangeMant = async (event) => {
-    const file = event.target.files[0];
-
-    this.setState({
-      message: "Uploading metadata",
-    });
-
-    try {
-      const added = await client.add(file);
-      const metadata = `https://ipfs.infura.io/ipfs/${added.path}`;
-
-      this.setState({ metadata });
-
-      console.log("URL MANTENIMIENTO: ", metadata);
-      this.setState({
-        message: "Metadata Uploaded",
-      });
-    } catch (error) {
-      this.setState({
-        message: "Error uploading metadata",
       });
     }
   };
@@ -158,7 +200,9 @@ class Maintenance extends React.Component {
                 Object.keys(this.state.table[0]).map(function (element) {
                   return (
                     <th align="center">
-                      <td>{element}</td>
+                      <td>
+                        <h3>{element}</h3>
+                      </td>
                     </th>
                   );
                 })}
@@ -179,10 +223,48 @@ class Maintenance extends React.Component {
         </div>
         <hr />
         <form onSubmit={this.onSubmitForm}>
-          <h4>
-            New maintenance info:{" "}
-            <input type="file" onChange={this.onChangeMant} />
-          </h4>
+          <h2>
+            Name:
+            <input
+              value={this.state.name}
+              onChange={(event) => this.setState({ name: event.target.value })}
+            />
+          </h2>
+          <h2>
+            Km:
+            <input
+              value={this.state.km}
+              onChange={(event) => this.setState({ km: event.target.value })}
+            />
+          </h2>
+          <h2>
+            Description:
+            <input
+              value={this.state.description}
+              onChange={(event) =>
+                this.setState({ description: event.target.value })
+              }
+            />
+          </h2>
+          <h2>
+            Observations:
+            <input
+              value={this.state.observations}
+              onChange={(event) =>
+                this.setState({ observations: event.target.value })
+              }
+            />
+          </h2>
+          <h2>
+            Dealer:
+            <input
+              value={this.state.dealer}
+              onChange={(event) =>
+                this.setState({ dealer: event.target.value })
+              }
+            />
+          </h2>
+
           <button>Change Maintenance Information</button>
         </form>
         <hr />
@@ -193,28 +275,3 @@ class Maintenance extends React.Component {
 }
 
 export default Maintenance;
-
-// <table>
-//   <thead>
-//     <tr>
-//       <th>Name</th>
-//       <th>KM</th>
-//       <th>Description</th>
-//       <th>Observations</th>
-//       <th>Dealer</th>
-//     </tr>
-//   </thead>
-//   <tbody>
-//     {responseJson.map((value, key) => {
-//       return (
-//         <tr key={key}>
-//           <td>{value.name}</td>
-//           <td>{value.km}</td>
-//           <td>{value.description}</td>
-//           <td>{value.observations}</td>
-//           <td>{value.dealer}</td>
-//         </tr>
-//       );
-//     })}
-//   </tbody>
-// </table>
