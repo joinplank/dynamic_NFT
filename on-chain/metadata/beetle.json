@@ -1,0 +1,18 @@
+{
+  "maintenances": [
+    {
+      "name": "10 years Check",
+      "km": "200.000km",
+      "description": "Adjust cilinder head",
+      "observations": "Like new",
+      "dealer": "Volskwagen Official Maintenance Germany"
+    },
+    {
+      "name": "30 years Check",
+      "km": "760.000km",
+      "description": "change motor",
+      "observations": "Need to change everything",
+      "dealer": "Volskwagen Official Maintenance Cordoba"
+    }
+  ]
+}
