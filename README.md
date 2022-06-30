@@ -37,7 +37,9 @@ node 16.14.2 or later is needed
 ```
 git clone https://github.com/joinplank/dynamic_NFT.git
 cd dynamic_NFT
+cd on-chain
 npm install
+cd ..
 cd off-chain
 npm install
 npm start
@@ -58,7 +60,9 @@ node 16.14.2 or later is needed
 ```
 git clone https://github.com/joinplank/dynamic_NFT.git
 cd dynamic_NFT
+cd on-chain
 npm install
+cd ..
 cd off-chain
 npm install
 ```
@@ -70,6 +74,7 @@ INFURA_ACCESS_TOKEN="your infura access token for rinkeby test network"
 ```
 ## Compile contract 
 ```
+cd on-chain
 truffle compile
 ```
 
